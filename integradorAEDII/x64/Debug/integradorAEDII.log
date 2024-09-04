@@ -1,3 +1,3 @@
 ﻿  main.cpp
-C:\Users\ignad\OneDrive - UNIVERSIDAD BLAS PASCAL\ING INFORMATICA 2014\SEMESTRE 4\AED II\integradorAEDII\main.cpp(172,8): warning C4267: 'inicializando': conversión de 'size_t' a 'int'; posible pérdida de datos
+C:\Users\ignad\OneDrive - UNIVERSIDAD BLAS PASCAL\ING INFORMATICA 2014\SEMESTRE 4\AED II\integradorAEDII\main.cpp(174,8): warning C4267: 'inicializando': conversión de 'size_t' a 'int'; posible pérdida de datos
   integradorAEDII.vcxproj -> C:\Users\ignad\OneDrive - UNIVERSIDAD BLAS PASCAL\ING INFORMATICA 2014\SEMESTRE 4\AED II\integradorAEDII\x64\Debug\integradorAEDII.exe

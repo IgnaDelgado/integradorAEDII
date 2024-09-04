@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <queue>
 
 using namespace std;
 
@@ -40,6 +41,7 @@ public:
 	}
 };
 
+// Funcion para imprimir la solucion del algoritmo de Floyd-Warshall
 void printSolution(int** dist, int V, int** local, string* nameLocations)
 {
 	cout << "La siguiente matriz muestra la distancia mas corta entre cada par de nodos " << endl;
@@ -252,6 +254,40 @@ void addSubject(vector<Edge>& subjects, string subjectName, vector<string>& subj
 	}
 }
 
+// Función para realizar el Recorrido en Profundidad (DFS)
+void DFS(vector<vector<int>>& grafo, vector<bool>& visitado, int nodoActual) {
+	visitado[nodoActual] = true;
+	cout << "Visitando nodo: " << nodoActual << endl;
+
+	for (int nodoAdyacente = 0; nodoAdyacente < grafo.size(); ++nodoAdyacente) {
+		if (grafo[nodoActual][nodoAdyacente] == 1 && !visitado[nodoAdyacente]) {
+			DFS(grafo, visitado, nodoAdyacente);
+		}
+	}
+}
+
+// Función para realizar el Recorrido en Amplitud (BFS)
+void BFS(vector<vector<int>>& grafo, int nodoInicio) {
+	vector<bool> visitado(grafo.size(), false);
+	queue<int> cola;
+
+	visitado[nodoInicio] = true;
+	cola.push(nodoInicio);
+
+	while (!cola.empty()) {
+		int nodoActual = cola.front();
+		cola.pop();
+		cout << "Visitando nodo: " << nodoActual << endl;
+
+		for (int nodoAdyacente = 0; nodoAdyacente < grafo.size(); ++nodoAdyacente) {
+			if (grafo[nodoActual][nodoAdyacente] == 1 && !visitado[nodoAdyacente]) {
+				visitado[nodoAdyacente] = true;
+				cola.push(nodoAdyacente);
+			}
+		}
+	}
+}
+
 int main() {
 	// Logica menu
 	int selector = 0, i = 0, j = 0, k = 0;
@@ -275,13 +311,18 @@ int main() {
 	int finalNode = 0, src = 0;
 	int** graph1 = new int* [nodes];
 
-
 	// Variables case 3
 	vector<Edge> subjects;
 	int totalSubjects, numDependencies = 0, option;
 	//Definir subjectNames
 	vector<string> subjectNames;
 	vector<int> L;
+
+	// Variables case 4
+	int numNodos = 0;
+	vector<vector<int>> grafo(numNodos, vector<int>(numNodos, 0));
+	int nodoInicio;
+	vector<bool> visitadoDFS(numNodos, false);
 
 	while (seguir) {
 
@@ -352,8 +393,8 @@ int main() {
 			}
 
 			floydWarshall(matrix, nodes, locations, nameLocations);
+			break;
 		}
-		break;
 		case 2:
 		{
 			// Se pide al usuario ingresar cantidad de nodos
@@ -525,8 +566,44 @@ int main() {
 			break;
 		}
 		case 4:
+		{
+			cout << "Ingrese el numero de nodos en el grafo: ";
+			cin >> numNodos;
 
+			// Inicialización de la matriz de adyacencia
+			cout << "Ingrese la matriz de adyacencia del grafo (0 o 1):\n";
+			grafo.resize(numNodos, vector<int>(numNodos, 0));
+			visitadoDFS.resize(numNodos, false);
+			for (int i = 0; i < numNodos; ++i) {
+				for (int j = 0; j < numNodos; ++j) {
+					cin >> grafo[i][j];
+				}
+			}
+
+			cout << "Ingrese el nodo de inicio para el recorrido: ";
+			cin >> nodoInicio;
+
+			// ------MENU------ //
+			cout << "1. Si desea ver recorrido por profundidad (DSF)" << endl;
+			cout << "2. Si desea ver recorrido por amplitud (BSF)" << endl;
+			cout << "";
+			cin >> selector;
+
+			if (selector == 1) {
+				cout << "Recorrido en Profundidad (DFS):" << endl;
+				DFS(grafo, visitadoDFS, nodoInicio);
+			}
+			else if (selector == 2) {
+				cout << endl << "Recorrido en Amplitud (BFS):" << endl;
+				BFS(grafo, nodoInicio);
+			}
+			else {
+				cout << "Opcion ingresada no valida" << endl;
+			}
+			break;
 		}
+		}
+
 		if (selector == 9)
 		{
 			seguir = false;
