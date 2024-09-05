@@ -314,6 +314,12 @@ int main() {
 	cout << "9. Salir" << endl;
 	cin >> selector;
 
+	while (selector > 9 || selector < 1) 
+	{
+		cout << "Ingrese una opcion valida" << endl;
+		cin >> selector;
+	}
+
 	// Variables case 1
 	int nodes = 0, auxNumber = 0;
 	bool correct = true;
@@ -321,7 +327,7 @@ int main() {
 
 	// Variables case 2
 	int finalNode = 0, src = 0;
-	int** graph1 = new int* [nodes];
+	int** graphCase2 = new int* [nodes];
 
 	// Variables case 3
 	vector<Edge> subjects;
@@ -331,15 +337,14 @@ int main() {
 	vector<int> L;
 
 	// Variables case 4
-	int numNodos = 0;
-	vector<vector<int>> grafo(numNodos, vector<int>(numNodos, 0));
-	int nodoInicio;
-	vector<bool> visitadoDFS(numNodos, false);
+	vector<vector<int>> graph(nodes, vector<int>(nodes, 0));
+	int firstNode;
+	vector<bool> visitedDFS(nodes, false);
 
 	// Variables case 5
-	vector<bool> visitado(numNodos, false);
-	vector<vector<int>> componentesConexas;
-	vector<vector<int>> grafoConexo(numNodos, vector<int>(numNodos, 0));
+	vector<bool> visited(nodes, false);
+	vector<vector<int>> connectedComponents;
+	vector<vector<int>> connectivityGraph(nodes, vector<int>(nodes, 0));
 
 	while (seguir) {
 
@@ -350,57 +355,75 @@ int main() {
 			// Se pide al usuario ingresar cantidad de nodos
 			cout << "Ingrese la cantidad de nodos: ";
 			cin >> nodes;
+			while (cin.fail()) 
+			{
+				cin.clear();
+				cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Se ignora toda la entrada anterior hasta encontrar un salto de linea  
+				cout << "Ingrese una opcion valida: ";
+				cin >> nodes;
+			}
 
 			int** matrix = new int* [nodes];
 			// Declaracion de la matriz
-			for (i = 0; i < nodes; i++) {
+			for (i = 0; i < nodes; i++) 
+			{
 				matrix[i] = new int[nodes];
 			}
 
 			// Declaracion de la matriz de recorrido
 			int** locations = new int* [nodes];
-			for (i = 0; i < nodes; i++) {
+			for (i = 0; i < nodes; i++)
+			{
 				locations[i] = new int[nodes];
 			}
 
 			nameLocations = new string[nodes];
-			for (i = 0; i < nodes; i++) {
-				cout << "Ingrese el nombre de la ciudad " << i << endl;
+			for (i = 0; i < nodes; i++) 
+			{
+				cout << "Ingrese el nombre de la ciudad " << i + 1 << endl;
 				cin >> nameLocations[i];
 			}
 
 			// Inicializacion de la matriz de recorrido
-			for (i = 0; i < nodes; i++) {
-				for (j = 0; j < nodes; j++) {
+			for (i = 0; i < nodes; i++) 
+			{
+				for (j = 0; j < nodes; j++)
+				{
 					locations[i][j] = j + 1;
 				}
 			}
 
 			// Insercion de datos segun corresponda en matriz de adyacencia
 
-			for (i = 0; i < nodes; i++) {
-				for (j = 0; j < nodes; j++) {
+			for (i = 0; i < nodes; i++) 
+			{
+				for (j = 0; j < nodes; j++) 
+				{
 
-					if (i == j) {
+					if (i == j)
+					{
 						matrix[i][j] = 0;
 						continue;
 					}
 
 					// Consideraciones al ingresar los datos de aristas
-					cout << "Ingrese el numero de arista entre los nodos " << i << " " << j << endl;
+					cout << "Ingrese el numero de arista entre los nodos " << i +1 << " " << j + 1 << endl;
 					cout << "En caso de no existir arista, ingrese 0" << endl;
 
 					// Manejo de excepciones tipo de dato
-					try {
+					try 
+					{
 						cin >> auxNumber;
 					}
-					catch (exception e) {
+					catch (exception e) 
+					{
 						cout << "Error: " << e.what() << endl;
 						cout << "Intente nuevamente" << endl;
 					}
 
 					// Verificacion de casos especiales (bucle o no arista)
-					if (auxNumber == 0) {
+					if (auxNumber == 0) 
+					{
 						matrix[i][j] = INF;
 						continue;
 					}
@@ -408,7 +431,6 @@ int main() {
 					matrix[i][j] = auxNumber;
 				}
 			}
-
 			floydWarshall(matrix, nodes, locations, nameLocations);
 			break;
 		}
@@ -417,50 +439,63 @@ int main() {
 			// Se pide al usuario ingresar cantidad de nodos
 			cout << "Ingrese la cantidad de nodos: ";
 			cin >> nodes;
+			while (cin.fail())
+			{
+				cin.clear();
+				cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Se ignora toda la entrada anterior hasta encontrar un salto de linea  
+				cout << "Ingrese una opcion valida: ";
+				cin >> nodes;
+			}
 
 			// Declaracion de la matriz
-			for (i = 0; i < nodes; i++) {
-				graph1[i] = new int[nodes];
+			for (i = 0; i < nodes; i++)
+			{
+				graphCase2[i] = new int[nodes];
 			}
 
 			nameLocations = new string[nodes];
-			for (i = 0; i < nodes; i++) {
-				cout << "Ingrese el nombre de la ciudad " << i << endl;
+			for (i = 0; i < nodes; i++) 
+			{
+				cout << "Ingrese el nombre de la ciudad " << i + 1 << endl;
 				cin >> nameLocations[i];
 			}
-
 
 			// Inicializar matriz con valores 0
 			for (i = 0; i < nodes; i++)
 			{
 				for (j = 0; j < nodes; j++)
 				{
-					graph1[i][j] = 0;
+					graphCase2[i][j] = 0;
 				}
 			}
 
 			// Llenar la matriz por encima de la diagonal principal
-
 			for (i = 0; i < nodes; i++)
 			{
 				for (j = 0; j < nodes; j++)
 				{
 					if (i != j)
 					{
-						if (graph1[i][j] == 0)
+						if (graphCase2[i][j] == 0)
 						{
 							int distancia;
 							cout << "Ingrese la distancia entre el nodo " << nameLocations[i] << " y el nodo " << nameLocations[j] << ": ";
 							cin >> distancia;
+							while (cin.fail()) {
+								cin.clear();
+								cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Se ignora toda la entrada anterior hasta encontrar un salto de linea  
+								cout << "Ingrese una opcion valida: ";
+								cin >> distancia;
+							}
 							if (distancia == 0)
 							{
-								graph1[i][j] = INF;
-								graph1[j][i] = INF;
+								graphCase2[i][j] = INF;
+								graphCase2[j][i] = INF;
 							}
 							else
 							{
-								graph1[i][j] = distancia;
-								graph1[j][i] = distancia;
+								graphCase2[i][j] = distancia;
+								graphCase2[j][i] = distancia;
 							}
 						}
 					}
@@ -471,10 +506,22 @@ int main() {
 
 			cout << "Indica el indice de tu nodo raiz" << endl;
 			cin >> src;
+			while (cin.fail()) {
+				cin.clear();
+				cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Se ignora toda la entrada anterior hasta encontrar un salto de linea  
+				cout << "Ingrese una opcion valida: ";
+				cin >> src;
+			}
 			cout << "Indica el indice del nodo final" << endl;
 			cin >> finalNode;
+			while (cin.fail()) {
+				cin.clear();
+				cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Se ignora toda la entrada anterior hasta encontrar un salto de linea  
+				cout << "Ingrese una opcion valida: ";
+				cin >> finalNode;
+			}
 
-			dijkstra(src, finalNode, graph1, nodes, nameLocations);
+			dijkstra(src, finalNode, graphCase2, nodes, nameLocations);
 			break;
 		}
 		case 3:
@@ -482,6 +529,12 @@ int main() {
 			// Orden topologico
 			cout << "Ingrese el numero de asignaturas: ";
 			cin >> totalSubjects;
+			while (cin.fail()) {
+				cin.clear();
+				cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Se ignora toda la entrada anterior hasta encontrar un salto de linea  
+				cout << "Ingrese una opcion valida: ";
+				cin >> totalSubjects;
+			}
 			subjectNames.resize(totalSubjects);
 
 			// Array dinámico para asignaturas
@@ -494,6 +547,12 @@ int main() {
 			for (int i = 0; i < totalSubjects; i++) {
 				cout << "Ingrese el numero de dependencias para la asignatura " << subjectNames[i] << ": ";
 				cin >> numDependencies;
+				while (cin.fail()) {
+					cin.clear();
+					cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Se ignora toda la entrada anterior hasta encontrar un salto de linea  
+					cout << "Ingrese una opcion valida: ";
+					cin >> numDependencies;
+				}
 				for (int j = 0; j < numDependencies; j++) {
 					cout << "Ingrese la dependencia " << j + 1 << " para la asignatura " << subjectNames[i] << ": ";
 					string dependency;
@@ -534,13 +593,21 @@ int main() {
 				cout << "Ingrese 0 para salir " << endl;
 				cin >> selector;
 
+				while (cin.fail()) {
+					cin.clear();
+					cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Se ignora toda la entrada anterior hasta encontrar un salto de linea  
+					cout << "Ingrese una opcion valida: ";
+					cin >> selector;
+				}
+
 				if (selector == 1) {
 					string subjectName;
 					cout << "Ingrese el nombre de la asignatura: ";
 					cin >> subjectName;
 					addSubject(subjects, subjectName, subjectNames, totalSubjects);
 				}
-				else if (selector == 2) {
+				else if (selector == 2) 
+				{
 					string subjectName;
 					cout << "Ingrese el nombre de la asignatura para eliminar: ";
 					cin >> subjectName;
@@ -566,17 +633,21 @@ int main() {
 					L = doTopologicalSort(graph);
 					// Imprime el orden topológico
 					cout << "El orden de las asignaturas después de eliminar es el siguiente: " << endl;
-					if (L.size()) {
-						for (int i : L) {
+					if (L.size()) 
+					{
+						for (int i : L) 
+						{
 							cout << subjectNames[i] << " --> ";
 						}
 						cout << "Fin" << endl;
 					}
-					else {
+					else 
+					{
 						cout << "El orden topologico no es posible" << endl;
 					}
 				}
-				else if (selector == 0) {
+				else if (selector == 0) 
+				{
 					break;
 				}
 			}
@@ -585,70 +656,111 @@ int main() {
 		case 4:
 		{
 			cout << "Ingrese el numero de nodos en el grafo: ";
-			cin >> numNodos;
+			cin >> nodes;
+			while (cin.fail()) 
+			{
+				cin.clear();
+				cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Se ignora toda la entrada anterior hasta encontrar un salto de linea  
+				cout << "Ingrese una opcion valida: ";
+				cin >> nodes;
+			}
 
 			// Inicialización de la matriz de adyacencia
-			cout << "Ingrese la matriz de adyacencia del grafo (0 o 1):\n";
-			grafo.resize(numNodos, vector<int>(numNodos, 0));
-			visitadoDFS.resize(numNodos, false);
-			for (int i = 0; i < numNodos; ++i) {
-				for (int j = 0; j < numNodos; ++j) {
-					cin >> grafo[i][j];
+			cout << "Ingrese la matriz de adyacencia del grafo (0 o 1):" << endl;;
+			graph.resize(nodes, vector<int>(nodes, 0));
+			visitedDFS.resize(nodes, false);
+			for (int i = 0; i < nodes; ++i) 
+			{
+				for (int j = 0; j < nodes; ++j) 
+				{
+					cout << "Indique el valor correspondiente al" << i + 1 << "," << j + 1 << endl;
+					cin >> graph[i][j];
+					while (graph[i][j] != 1 || graph[i][j] != 0) 
+					{
+						cin.clear();
+						cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Se ignora toda la entrada anterior hasta encontrar un salto de linea  
+						cout << "Ingrese una opcion valida: 1 o 0";
+						cin >> graph[i][j];
+					}
 				}
 			}
 
 			cout << "Ingrese el nodo de inicio para el recorrido: ";
-			cin >> nodoInicio;
-
+			cin >> firstNode;
+			while (cin.fail())
+			{
+				cin.clear();
+				cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Se ignora toda la entrada anterior hasta encontrar un salto de linea  
+				cout << "Ingrese una opcion valida: ";
+				cin >> firstNode;
+			}
+			system("cls");
 			// ------MENU------ //
 			cout << "1. Si desea ver recorrido por profundidad (DSF)" << endl;
 			cout << "2. Si desea ver recorrido por amplitud (BSF)" << endl;
-			cout << "";
 			cin >> selector;
+			while (selector != 1 || selector != 2) 
+			{
+				cin.clear();
+				cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Se ignora toda la entrada anterior hasta encontrar un salto de linea  
+				cout << "Ingrese una opcion valida: 1 o 0";
+				cin >> selector;
+			}
 
-			if (selector == 1) {
+			if (selector == 1) 
+			{
 				cout << "Recorrido en Profundidad (DFS):" << endl;
-				DFS(grafo, visitadoDFS, nodoInicio);
+				DFS(graph, visitedDFS, firstNode);
 			}
-			else if (selector == 2) {
+			else 
+			{
 				cout << endl << "Recorrido en Amplitud (BFS):" << endl;
-				BFS(grafo, nodoInicio);
+				BFS(graph, firstNode);
 			}
-			else {
-				cout << "Opcion ingresada no valida" << endl;
-			}
+			
 			break;
 		}
 		case 5:
 		{
 			cout << "Ingrese el número de nodos en el grafo: ";
-			cin >> numNodos;
-
-			grafoConexo.resize(numNodos, vector<int>(numNodos, 0));
+			cin >> nodes;
+			while (cin.fail()) 
+			{
+				cin.clear();
+				cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Se ignora toda la entrada anterior hasta encontrar un salto de linea  
+				cout << "Ingrese una opcion valida: ";
+				cin >> nodes;
+			}
+			connectivityGraph.resize(nodes, vector<int>(nodes, 0));
 			cout << "Ingrese la matriz de adyacencia del grafo (0 o 1):\n";
 
-			for (int i = 0; i < numNodos; ++i) {
-				for (int j = 0; j < numNodos; ++j) {
-					cin >> grafoConexo[i][j];
+			for (int i = 0; i < nodes; ++i)
+			{
+				for (int j = 0; j < nodes; ++j) 
+				{
+					cout << "Indique el valor correspondiente al" << i + 1 << "," << j + 1 << endl;
+					cin >> connectivityGraph[i][j];
 				}
 			}
 
-			visitado.resize(numNodos, false);
+			visited.resize(nodes, false);
 			
-
-			for (int nodo = 0; nodo < numNodos; ++nodo) {
-				if (!visitado[nodo]) {
+			for (int nodo = 0; nodo < nodes; ++nodo) 
+			{
+				if (!visited[nodo]) {
 					vector<int> componenteActual;
-					Conexo(grafoConexo, visitado, nodo, componenteActual);
-					componentesConexas.push_back(componenteActual);
+					Conexo(connectivityGraph, visited, nodo, componenteActual);
+					connectedComponents.push_back(componenteActual);
 				}
 			}
 
-			cout << "\nComponentes Conexas:\n";
-			for (int i = 0; i < componentesConexas.size(); ++i) {
+			cout << "Componentes Conexas : " << endl;
+			for (int i = 0; i < connectedComponents.size(); ++i) 
+			{
 				cout << "Componente " << i + 1 << ": ";
-				for (int j = 0; j < componentesConexas[i].size(); ++j) {
-					cout << componentesConexas[i][j] << " ";
+				for (int j = 0; j < connectedComponents[i].size(); ++j) 
+				{
+					cout << connectedComponents[i][j] << " ";
 				}
 				cout << endl;
 			}
@@ -662,7 +774,8 @@ int main() {
 		}
 		else
 		{
-			cout << endl << endl;
+			system("pause");
+			system("cls");
 			cout << "---------MENU---------" << endl;
 			cout << "1. Usar Floyd-Warshall" << endl;
 			cout << "2. Usar Dijkstra" << endl;
@@ -672,6 +785,10 @@ int main() {
 			cout << "6. Usar recorrido por conectividad" << endl;
 			cout << "9. Salir" << endl;
 			cin >> selector;
+			while (selector > 9 || selector < 1) {
+				cout << "Ingrese una opcion valida" << endl;
+				cin >> selector;
+			}
 		}
 	}
 }
