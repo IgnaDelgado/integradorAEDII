@@ -266,6 +266,18 @@ void DFS(vector<vector<int>>& grafo, vector<bool>& visitado, int nodoActual) {
 	}
 }
 
+// Funcion para verficiar conectividad
+void Conexo(vector<vector<int>>& grafo, vector<bool>& visitado, int nodoActual, vector<int>& componente) {
+	visitado[nodoActual] = true;
+	componente.push_back(nodoActual);
+
+	for (int nodoAdyacente = 0; nodoAdyacente < grafo.size(); ++nodoAdyacente) {
+		if (grafo[nodoActual][nodoAdyacente] == 1 && !visitado[nodoAdyacente]) {
+			Conexo(grafo, visitado, nodoAdyacente, componente);
+		}
+	}
+}
+
 // Función para realizar el Recorrido en Amplitud (BFS)
 void BFS(vector<vector<int>>& grafo, int nodoInicio) {
 	vector<bool> visitado(grafo.size(), false);
@@ -296,8 +308,8 @@ int main() {
 	cout << "1. Usar Floyd-Warshall" << endl;
 	cout << "2. Usar Dijkstra" << endl;
 	cout << "3. Orden Topologico" << endl;
-	cout << "4. Usar recorrido en profundidad" << endl;
-	cout << "5. Usar recorrido por amplitud" << endl;
+	cout << "4. Usar recorridos de amplitud y profundidad (BSP) (DSP)" << endl;
+	cout << "5. Verficiar conectividad del grafo" << endl;
 	cout << "6. Usar recorrido por conectividad" << endl;
 	cout << "9. Salir" << endl;
 	cin >> selector;
@@ -313,7 +325,7 @@ int main() {
 
 	// Variables case 3
 	vector<Edge> subjects;
-	int totalSubjects, numDependencies = 0, option;
+	int totalSubjects, numDependencies = 0;
 	//Definir subjectNames
 	vector<string> subjectNames;
 	vector<int> L;
@@ -323,6 +335,11 @@ int main() {
 	vector<vector<int>> grafo(numNodos, vector<int>(numNodos, 0));
 	int nodoInicio;
 	vector<bool> visitadoDFS(numNodos, false);
+
+	// Variables case 5
+	vector<bool> visitado(numNodos, false);
+	vector<vector<int>> componentesConexas;
+	vector<vector<int>> grafoConexo(numNodos, vector<int>(numNodos, 0));
 
 	while (seguir) {
 
@@ -515,15 +532,15 @@ int main() {
 				cout << "Ingrese 1 para agregar una asignatura" << endl;
 				cout << "Ingrese 2 para eliminar una asignatura" << endl;
 				cout << "Ingrese 0 para salir " << endl;
-				cin >> option;
+				cin >> selector;
 
-				if (option == 1) {
+				if (selector == 1) {
 					string subjectName;
 					cout << "Ingrese el nombre de la asignatura: ";
 					cin >> subjectName;
 					addSubject(subjects, subjectName, subjectNames, totalSubjects);
 				}
-				else if (option == 2) {
+				else if (selector == 2) {
 					string subjectName;
 					cout << "Ingrese el nombre de la asignatura para eliminar: ";
 					cin >> subjectName;
@@ -559,7 +576,7 @@ int main() {
 						cout << "El orden topologico no es posible" << endl;
 					}
 				}
-				else if (option == 0) {
+				else if (selector == 0) {
 					break;
 				}
 			}
@@ -601,6 +618,41 @@ int main() {
 				cout << "Opcion ingresada no valida" << endl;
 			}
 			break;
+		}
+		case 5:
+		{
+			cout << "Ingrese el número de nodos en el grafo: ";
+			cin >> numNodos;
+
+			grafoConexo.resize(numNodos, vector<int>(numNodos, 0));
+			cout << "Ingrese la matriz de adyacencia del grafo (0 o 1):\n";
+
+			for (int i = 0; i < numNodos; ++i) {
+				for (int j = 0; j < numNodos; ++j) {
+					cin >> grafoConexo[i][j];
+				}
+			}
+
+			visitado.resize(numNodos, false);
+			
+
+			for (int nodo = 0; nodo < numNodos; ++nodo) {
+				if (!visitado[nodo]) {
+					vector<int> componenteActual;
+					Conexo(grafoConexo, visitado, nodo, componenteActual);
+					componentesConexas.push_back(componenteActual);
+				}
+			}
+
+			cout << "\nComponentes Conexas:\n";
+			for (int i = 0; i < componentesConexas.size(); ++i) {
+				cout << "Componente " << i + 1 << ": ";
+				for (int j = 0; j < componentesConexas[i].size(); ++j) {
+					cout << componentesConexas[i][j] << " ";
+				}
+				cout << endl;
+			}
+
 		}
 		}
 
